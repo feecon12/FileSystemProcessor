@@ -1,7 +1,11 @@
 import fs from "fs";
 
-// Process JSON data with forms
-async function processJSONWithForms(jsonFilePath, formsData) {
+// Process JSON data with forms and form matrix mappings
+async function processJSONWithForms(
+  jsonFilePath,
+  formsData,
+  formMatrixMappings = {}
+) {
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(jsonFilePath)) {
       reject(new Error(`JSON file not found: ${jsonFilePath}`));
@@ -24,7 +28,7 @@ async function processJSONWithForms(jsonFilePath, formsData) {
 
         // Process each form line
         formsData.forEach((line, index) => {
-          console.log(`Form ${index + 1}: ${line}`);
+          console.log(`📋 Form ${index + 1}: ${line}`);
 
           // Process each JSON template item
           jsonData.forEach((item) => {
@@ -68,6 +72,27 @@ async function processJSONWithForms(jsonFilePath, formsData) {
               normalizedItem["Expected Results"] = normalizedItem[
                 "Expected Results"
               ].replace(new RegExp("FORMNUM", "g"), line);
+            }
+
+            // Apply form matrix mappings if available for this form
+            if (formMatrixMappings[line]) {
+              const mappings = formMatrixMappings[line];
+
+              // Apply all form matrix mappings to all fields
+              Object.keys(normalizedItem).forEach((field) => {
+                if (
+                  normalizedItem[field] &&
+                  typeof normalizedItem[field] === "string"
+                ) {
+                  Object.keys(mappings).forEach((placeholder) => {
+                    const value = mappings[placeholder];
+                    normalizedItem[field] = normalizedItem[field].replace(
+                      new RegExp(placeholder, "g"),
+                      value
+                    );
+                  });
+                }
+              });
             }
 
             processedData.push(normalizedItem);

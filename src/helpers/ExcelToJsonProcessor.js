@@ -3,7 +3,7 @@ import fs from "fs";
 
 // Function to convert Excel file to JSON (fixed version)
 async function excelToJSONStream(excelFilePath, jsonFilePath) {
-  console.log(`Converting ${excelFilePath} to ${jsonFilePath}...`);
+  console.log(`🔄 Converting ${excelFilePath} to ${jsonFilePath}...`);
 
   const jsonData = [];
   let worksheetCount = 0;
@@ -15,7 +15,7 @@ async function excelToJSONStream(excelFilePath, jsonFilePath) {
 
     workbook.eachSheet((worksheet, sheetId) => {
       worksheetCount++;
-      console.log(`Processing worksheet: ${worksheet.name}`);
+      console.log(`📑 Processing worksheet: ${worksheet.name}`);
 
       let headers = [];
       let rowCount = 0;
@@ -34,7 +34,21 @@ async function excelToJSONStream(excelFilePath, jsonFilePath) {
           row.eachCell((cell, colNumber) => {
             const header = headers[colNumber];
             if (header) {
-              rowObject[header] = cell.value;
+              // Extract plain text from rich text or return regular value
+              let cellValue = cell.value;
+
+              // Handle rich text objects
+              if (
+                cellValue &&
+                typeof cellValue === "object" &&
+                cellValue.richText
+              ) {
+                cellValue = cellValue.richText
+                  .map((part) => part.text)
+                  .join("");
+              }
+
+              rowObject[header] = cellValue;
             }
           });
 
@@ -47,13 +61,13 @@ async function excelToJSONStream(excelFilePath, jsonFilePath) {
     });
 
     console.log(
-      `Excel processing complete! Total worksheets: ${worksheetCount}`
+      `🎊 Excel processing complete! Total worksheets: ${worksheetCount}`
     );
 
     // Write JSON to file
     fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2), "utf-8");
     console.log(`✅ Converted ${excelFilePath} to ${jsonFilePath}`);
-    console.log(`   Total records: ${jsonData.length}`);
+    console.log(`   📊 Total records: ${jsonData.length}`);
 
     return jsonData;
   } catch (error) {

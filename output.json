@@ -1,10 +1,10 @@
 [
   {
     "S.no": 1,
-    "Summary": "TC_1_Verify the dynamic fields for CA 11 211",
-    "Description": "Verify the dynamic fields for CA 11 211",
+    "Summary": "TC_1_Verify the dynamic fields for BAS UM (GA) 12 49 - Georgia Manhole Liability Coverage",
+    "Description": "Verify the dynamic fields for BAS UM (GA) 12 49 - Georgia Manhole Liability Coverage",
     "Test Type": "Manual",
-    "Test Step": "Login to PC and initiate a submission",
+    "Test Step": "Login to PC and initiate a submission for GA",
     "Expected Results": "User should be able to log in successfully and should be navigated to the Home Screen",
     "Repository": "SmartComm/Dyanamic Forms/SBGWI-256 - Something"
   },
@@ -22,8 +22,8 @@
     "Summary": "",
     "Description": "",
     "Test Type": "",
-    "Test Step": "Navigate to COVERAGE_TYPE tab.",
-    "Expected Results": "User should be able to nanvigate to the COVERAGE_TYPE screen",
+    "Test Step": "Add  will triggered when Manhole Liability coverage is selected",
+    "Expected Results": "User should be able to add all the terms",
     "Repository": ""
   },
   {
@@ -37,10 +37,10 @@
   },
   {
     "S.no": 2,
-    "Summary": "TC_1_Verify the dynamic fields for BA 15 210",
-    "Description": "Verify the dynamic fields for BA 15 210",
+    "Summary": "TC_1_Verify the dynamic fields for BAS UM (AZ) 03 12 - Arizona Manhole Liability Coverage",
+    "Description": "Verify the dynamic fields for BAS UM (AZ) 03 12 - Arizona Manhole Liability Coverage",
     "Test Type": "Manual",
-    "Test Step": "Login to PC and initiate a submission",
+    "Test Step": "Login to PC and initiate a submission for AZ",
     "Expected Results": "User should be able to log in successfully and should be navigated to the Home Screen",
     "Repository": "SmartComm/Dyanamic Forms/SBGWI-256 - Something"
   },
@@ -58,8 +58,8 @@
     "Summary": "",
     "Description": "",
     "Test Type": "",
-    "Test Step": "Navigate to COVERAGE_TYPE tab.",
-    "Expected Results": "User should be able to nanvigate to the COVERAGE_TYPE screen",
+    "Test Step": "Add  will triggered when Manhole Liability coverage is selected",
+    "Expected Results": "User should be able to add all the terms",
     "Repository": ""
   },
   {

@@ -6,7 +6,7 @@ function readFormsFile(formsFilePath) {
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(formsFilePath)) {
       console.warn(
-        `⚠️  Forms file not found: ${formsFilePath}. Using default form.`
+        `🤷‍♂️ Forms file not found: ${formsFilePath}. Using default form.`
       );
       resolve(["FORM001"]); // Default form if file doesn't exist
       return;

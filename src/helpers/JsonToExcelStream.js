@@ -1,15 +1,17 @@
 import processJSONWithForms from "./ProcessJsonWithForm.js";
 import { readFormsFile } from "./ReadFormFiles.js";
+import { readFormMatrixMappings } from "./ReadFormMatrixMappings.js";
 import { writeExcelStream } from "./WriteExcel.js";
 
-// Function to convert JSON file to Excel with streaming
+// Function to convert JSON file to Excel with enhanced form matrix processing
 async function jsonToExcelStream(
   jsonFilePath,
   excelFilePath,
-  formsFilePath
+  formsFilePath,
+  formMatrixFilePath = "formMatrix.xlsx"
 ) {
   console.log(
-    `📊 Converting ${jsonFilePath} to ${excelFilePath} with streaming...`
+    `� Converting ${jsonFilePath} to ${excelFilePath} with streaming...`
   );
 
   try {
@@ -17,10 +19,22 @@ async function jsonToExcelStream(
     const formsData = await readFormsFile(formsFilePath);
     console.log(`📝 Forms to process: ${formsData.length}`);
 
-    // Step 2: Process JSON data with forms
-    const processedData = await processJSONWithForms(jsonFilePath, formsData);
+    // Step 2: Read form matrix mappings
+    const formMatrixMappings = await readFormMatrixMappings(formMatrixFilePath);
+    console.log(
+      `🗂️ Form matrix mappings loaded: ${
+        Object.keys(formMatrixMappings).length
+      }`
+    );
 
-    // Step 3: Write to Excel
+    // Step 3: Process JSON data with forms and matrix mappings
+    const processedData = await processJSONWithForms(
+      jsonFilePath,
+      formsData,
+      formMatrixMappings
+    );
+
+    // Step 4: Write to Excel
     await writeExcelStream(processedData, excelFilePath);
 
     console.log(`✅ JSON converted to Excel successfully: ${excelFilePath}`);

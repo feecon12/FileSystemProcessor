@@ -15,25 +15,21 @@ async function writeExcelStream(data, excelFilePath) {
     // Style header row
     const headerRow = worksheet.getRow(1);
     headerRow.font = { bold: true };
-    headerRow.fill = {
-      type: "pattern",
-      pattern: "solid",
-    };
   }
 
   // Add data rows
-  console.log(`   Adding ${data.length} rows to Excel...`);
+  console.log(`   ➕ Adding ${data.length} rows to Excel...`);
   data.forEach((item, index) => {
     const row = Object.values(item);
     worksheet.addRow(row);
 
     if ((index + 1) % 1000 === 0) {
-      console.log(`     Added ${index + 1} rows...`);
+      console.log(`     ⚡ Added ${index + 1} rows...`);
     }
   });
 
   // Auto-fit columns
-  console.log("   Adjusting column widths...");
+  console.log("   🔧 Adjusting column widths...");
   worksheet.columns.forEach((column) => {
     let maxLength = 0;
     column.eachCell({ includeEmpty: true }, (cell) => {
@@ -46,7 +42,7 @@ async function writeExcelStream(data, excelFilePath) {
   });
 
   // Save the workbook
-  console.log("   Saving Excel file...");
+  console.log("   💾 Saving Excel file...");
   await workbook.xlsx.writeFile(excelFilePath);
   console.log(`💾 Excel file saved: ${excelFilePath}`);
 }

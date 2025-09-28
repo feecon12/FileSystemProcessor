@@ -1,10 +1,10 @@
 [
   {
     "S.no": 1,
-    "Summary": "TC_1_Verify the dynamic fields for FORMNUM",
-    "Description": "Verify the dynamic fields for FORMNUM",
+    "Summary": "TC_1_Verify the dynamic fields for FORMNUM EDITION - FORMNAME",
+    "Description": "Verify the dynamic fields for FORMNUM EDITION - FORMNAME",
     "Test Type": "Manual",
-    "Test Step": "Login to PC and initiate a submission",
+    "Test Step": "Login to PC and initiate a submission for STATE",
     "Expected Results": "User should be able to log in successfully and should be navigated to the Home Screen",
     "Repository": "SmartComm/Dyanamic Forms/SBGWI-256 - Something"
   },
@@ -13,8 +13,8 @@
     "Expected Results": "User should be able to start a New submission transaction"
   },
   {
-    "Test Step": "Navigate to COVERAGE_TYPE tab.",
-    "Expected Results": "User should be able to nanvigate to the COVERAGE_TYPE screen"
+    "Test Step": "Add TRIGGERING_CONDITION",
+    "Expected Results": "User should be able to add all the terms"
   },
   {
     "Test Step": "Verify that the below Coverage Term(s) is(are) displayed FIELDS",
