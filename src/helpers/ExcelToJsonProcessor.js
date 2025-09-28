@@ -1,92 +1,61 @@
 import ExcelJS from "exceljs";
 import fs from "fs";
 
-// Function to convert Excel file to JSON with streaming
+// Function to convert Excel file to JSON (fixed version)
 async function excelToJSONStream(excelFilePath, jsonFilePath) {
-  console.log(
-    `📊 Converting ${excelFilePath} to ${jsonFilePath} with streaming...`
-  );
+  console.log(`Converting ${excelFilePath} to ${jsonFilePath}...`);
 
   const jsonData = [];
   let worksheetCount = 0;
 
   try {
-    const workbookReader = new ExcelJS.stream.xlsx.WorkbookReader(
-      excelFilePath,
-      {
-        entries: "emit",
-        worksheets: "emit",
-        sharedStrings: "cache",
-        styles: "ignore",
-        hyperlinks: "ignore",
-      }
-    );
+    // Use regular workbook reading instead of streaming for better shared string handling
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(excelFilePath);
 
-    return new Promise((resolve, reject) => {
-      workbookReader.on("worksheet", (worksheet) => {
-        worksheetCount++;
-        console.log(`Processing worksheet: ${worksheet.name}`);
-        let rowCount = 0;
-        let headers = [];
+    workbook.eachSheet((worksheet, sheetId) => {
+      worksheetCount++;
+      console.log(`Processing worksheet: ${worksheet.name}`);
 
-        worksheet.on("row", (row) => {
-          rowCount++;
+      let headers = [];
+      let rowCount = 0;
 
-          // Convert row to object
+      worksheet.eachRow((row, rowNumber) => {
+        rowCount++;
+
+        if (rowNumber === 1) {
+          // First row contains headers
+          row.eachCell((cell, colNumber) => {
+            headers[colNumber] = cell.value || `Column${colNumber}`;
+          });
+        } else {
+          // Data rows
           const rowObject = {};
           row.eachCell((cell, colNumber) => {
-            // Use first row as headers
-            if (rowCount === 1) {
-              headers[colNumber] = cell.value || `Column${colNumber}`;
-            } else {
-              const header = headers[colNumber];
-              if (header) {
-                rowObject[header] = cell.value;
-              }
+            const header = headers[colNumber];
+            if (header) {
+              rowObject[header] = cell.value;
             }
           });
 
-          // Add to JSON data (skip header row)
-          if (rowCount > 1 && Object.keys(rowObject).length > 0) {
+          // Add to JSON data if it has content
+          if (Object.keys(rowObject).length > 0) {
             jsonData.push(rowObject);
           }
-
-          // Progress reporting
-          if (rowCount % 1000 === 0) {
-            console.log(`   Processed ${rowCount} rows...`);
-          }
-        });
-
-        worksheet.on("end", () => {
-          console.log(
-            `✅ Finished processing worksheet: ${worksheet.name} (${rowCount} rows)`
-          );
-        });
+        }
       });
-
-      workbookReader.on("end", () => {
-        console.log(
-          `🎉 Excel processing complete! Total worksheets: ${worksheetCount}`
-        );
-
-        // Write JSON data to file
-        fs.writeFileSync(
-          jsonFilePath,
-          JSON.stringify(jsonData, null, 2),
-          "utf-8"
-        );
-        console.log(`✅ Converted ${excelFilePath} to ${jsonFilePath}`);
-        console.log(`   Total records: ${jsonData.length}`);
-        resolve(jsonData);
-      });
-
-      workbookReader.on("error", (error) => {
-        console.error("❌ Error reading Excel file:", error);
-        reject(error);
-      });
-
-      workbookReader.read();
     });
+
+    console.log(
+      `Excel processing complete! Total worksheets: ${worksheetCount}`
+    );
+
+    // Write JSON to file
+    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2), "utf-8");
+    console.log(`✅ Converted ${excelFilePath} to ${jsonFilePath}`);
+    console.log(`   Total records: ${jsonData.length}`);
+
+    return jsonData;
   } catch (error) {
     console.error("❌ Conversion failed:", error);
     throw error;

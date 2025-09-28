@@ -18,7 +18,6 @@ async function writeExcelStream(data, excelFilePath) {
     headerRow.fill = {
       type: "pattern",
       pattern: "solid",
-      fgColor: { argb: "FFE6E6FA" },
     };
   }
 

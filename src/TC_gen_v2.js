@@ -13,7 +13,7 @@ async function TestGen() {
 
     if (!fs.existsSync(inputExcelFile)) {
       console.error(`❌ Excel file not found: ${inputExcelFile}`);
-      console.log('📝 Please create an Excel file named "excelData.xlsx"');
+      console.log('📝 Please create an Excel file named "inputTemplate.xlsx"');
       return;
     }
 

@@ -1,10 +1,10 @@
 [
   {
     "S.no": 1,
-    "Summary": "TC_1_Commercial Auto Line",
-    "Description": "Calidate Commercial Auto line CLAUSE_CATEGORY",
+    "Summary": "TC_1_Verify the dynamic fields for FORMNUM",
+    "Description": "Verify the dynamic fields for FORMNUM",
     "Test Type": "Manual",
-    "Test Step": "Login to PC",
+    "Test Step": "Login to PC and initiate a submission",
     "Expected Results": "User should be able to log in successfully and should be navigated to the Home Screen",
     "Repository": "SmartComm/Dyanamic Forms/SBGWI-256 - Something"
   },
