@@ -20,12 +20,20 @@ async function jsonToExcelStream(
     console.log(`📝 Forms to process: ${formsData.length}`);
 
     // Step 2: Read form matrix mappings
-    const formMatrixMappings = await readFormMatrixMappings(formMatrixFilePath);
-    console.log(
-      `🗂️ Form matrix mappings loaded: ${
-        Object.keys(formMatrixMappings).length
-      }`
-    );
+    let formMatrixMappings = {};
+    try {
+      formMatrixMappings = await readFormMatrixMappings(formMatrixFilePath);
+      console.log(
+        `🗂️ Form matrix mappings loaded: ${
+          Object.keys(formMatrixMappings).length
+        }`
+      );
+    } catch (error) {
+      console.warn(`⚠️  Failed to load form matrix: ${error.message}`);
+      console.warn(
+        `🔄 Processing will continue with FORMNAME, EDITION, STATE, TRIGGERING_CONDITION placeholders unchanged`
+      );
+    }
 
     // Step 3: Process JSON data with forms and matrix mappings
     const processedData = await processJSONWithForms(

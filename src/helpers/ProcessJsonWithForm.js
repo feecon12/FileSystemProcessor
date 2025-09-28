@@ -20,7 +20,22 @@ async function processJSONWithForms(
 
       try {
         const jsonData = JSON.parse(data);
+
+        // Validate JSON structure
+        if (!Array.isArray(jsonData) || jsonData.length === 0) {
+          reject(new Error("JSON data must be a non-empty array"));
+          return;
+        }
+
+        // Detect template structure dynamically
+        const sampleItem = jsonData[0];
+        const expectedFields = Object.keys(sampleItem);
+        console.log(
+          `📋 Detected template structure: ${expectedFields.join(", ")}`
+        );
+
         const processedData = [];
+        const warnedMissingForms = new Set(); // Track forms we've already warned about
 
         console.log(
           `🔄 Processing ${jsonData.length} JSON items with ${formsData.length} forms...`
@@ -28,55 +43,41 @@ async function processJSONWithForms(
 
         // Process each form line
         formsData.forEach((line, index) => {
+          // Reduced logging: only log the form being processed without matrix details
           console.log(`📋 Form ${index + 1}: ${line}`);
 
           // Process each JSON template item
           jsonData.forEach((item) => {
             const newItem = JSON.parse(JSON.stringify(item));
 
-            // Ensure all items have the same complete structure
-            const normalizedItem = {
-              "S.no": newItem["S.no"] || "",
-              Summary: newItem["Summary"] || "",
-              Description: newItem["Description"] || "",
-              "Test Type": newItem["Test Type"] || "",
-              "Test Step": newItem["Test Step"] || "",
-              "Expected Results": newItem["Expected Results"] || "",
-              Repository: newItem["Repository"] || "",
-            };
+            // Dynamic structure preservation instead of hardcoded fields
+            const normalizedItem = {};
+            Object.keys(item).forEach((key) => {
+              normalizedItem[key] = newItem[key] || "";
+            });
 
-            // Process items with S.no field (main test case records)
+            // Process items with S.no field (main test case records) if it exists
             if ("S.no" in newItem) {
               normalizedItem["S.no"] = index + 1;
-              // Safe string replacement
-              if (normalizedItem["Summary"]) {
-                normalizedItem["Summary"] = normalizedItem["Summary"]
+            }
+
+            // Safe string replacement for all string fields
+            Object.keys(normalizedItem).forEach((field) => {
+              if (
+                normalizedItem[field] &&
+                typeof normalizedItem[field] === "string"
+              ) {
+                // Apply FORMNUM and TC_01 replacements
+                normalizedItem[field] = normalizedItem[field]
                   .replace(new RegExp("TC_01", "g"), "TC_" + (index + 1))
                   .replace(new RegExp("FORMNUM", "g"), line);
               }
-              if (normalizedItem["Description"]) {
-                normalizedItem["Description"] = normalizedItem[
-                  "Description"
-                ].replace(new RegExp("FORMNUM", "g"), line);
-              }
-            }
-
-            // Process FORMNUM replacements in Test Step and Expected Results for all items
-            if (normalizedItem["Test Step"]) {
-              normalizedItem["Test Step"] = normalizedItem["Test Step"].replace(
-                new RegExp("FORMNUM", "g"),
-                line
-              );
-            }
-            if (normalizedItem["Expected Results"]) {
-              normalizedItem["Expected Results"] = normalizedItem[
-                "Expected Results"
-              ].replace(new RegExp("FORMNUM", "g"), line);
-            }
+            });
 
             // Apply form matrix mappings if available for this form
             if (formMatrixMappings[line]) {
               const mappings = formMatrixMappings[line];
+              // Removed individual matrix mapping logging to avoid console spam
 
               // Apply all form matrix mappings to all fields
               Object.keys(normalizedItem).forEach((field) => {
@@ -86,13 +87,39 @@ async function processJSONWithForms(
                 ) {
                   Object.keys(mappings).forEach((placeholder) => {
                     const value = mappings[placeholder];
-                    normalizedItem[field] = normalizedItem[field].replace(
-                      new RegExp(placeholder, "g"),
-                      value
-                    );
+                    if (value) {
+                      // Only replace if value exists
+                      normalizedItem[field] = normalizedItem[field].replace(
+                        new RegExp(placeholder, "g"),
+                        value
+                      );
+                    }
                   });
                 }
               });
+            } else {
+              // Warn about missing mapping but continue processing (only once per form)
+              if (!warnedMissingForms.has(line)) {
+                console.warn(
+                  `⚠️  No form matrix mapping found for form: ${line}`
+                );
+                const availableForms = Object.keys(formMatrixMappings);
+                if (availableForms.length > 7) {
+                  console.warn(
+                    `   📋 Available forms: ${availableForms
+                      .slice(0, 10)
+                      .join(", ")}... (${availableForms.length - 10} more)`
+                  );
+                } else {
+                  console.warn(
+                    `   📋 Available forms: ${availableForms.join(", ")}`
+                  );
+                }
+                console.warn(
+                  `   🔄 Placeholders FORMNAME, EDITION, STATE, TRIGGERING_CONDITION will remain unchanged`
+                );
+                warnedMissingForms.add(line);
+              }
             }
 
             processedData.push(normalizedItem);

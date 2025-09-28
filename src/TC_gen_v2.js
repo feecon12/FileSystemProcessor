@@ -24,13 +24,34 @@ async function TestGen() {
       // Convert Excel to JSON only
       await excelToJSONStream(inputExcelFile, "input.json");
     } else {
+      // Check if other required files exist
+      const formsFile = "forms.txt";
+      const matrixFile = "formMatrix.xlsx";
+
+      if (!fs.existsSync(formsFile)) {
+        console.warn(`⚠️  Forms file not found: ${formsFile}`);
+        console.log("📝 Creating empty forms.txt file...");
+        fs.writeFileSync(
+          formsFile,
+          "# Add form numbers here, one per line",
+          "utf-8"
+        );
+      }
+
+      if (!fs.existsSync(matrixFile)) {
+        console.warn(`⚠️  Form matrix file not found: ${matrixFile}`);
+        console.warn(
+          "🔄 Processing will continue without form matrix mappings"
+        );
+      }
+
       // Convert both ways
       await excelToJSONStream(inputExcelFile, "input.json");
       await jsonToExcelStream(
         inputJsonFile,
         "generated-output.xlsx",
-        "forms.txt",
-        "formMatrix.xlsx"
+        formsFile,
+        matrixFile
       );
     }
 

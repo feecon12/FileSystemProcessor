@@ -18,7 +18,7 @@ async function readFormMatrixMappings(excelFilePath) {
       rowCount++;
 
       if (rowNumber === 1) {
-        // Store headers
+        // Store headers (no logging to avoid console spam)
         row.eachCell((cell, colNumber) => {
           let headerValue = cell.value;
           // Handle rich text objects
@@ -33,7 +33,6 @@ async function readFormMatrixMappings(excelFilePath) {
           }
           headers[colNumber] = headerValue;
         });
-        console.log(`📋 Headers found: ${headers.filter((h) => h).join(", ")}`);
         return;
       }
 
@@ -60,11 +59,7 @@ async function readFormMatrixMappings(excelFilePath) {
           TRIGGERING_CONDITION: extractText(triggeringCondition),
         };
 
-        console.log(
-          `   📝 ${extractText(formNumber)} → ${extractText(
-            formName
-          )} (${extractText(stateAvailable)})`
-        );
+        // No individual form logging to avoid console spam with 1000s of forms
       }
     });
 
